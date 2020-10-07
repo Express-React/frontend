@@ -19,7 +19,7 @@ function Copyright() {
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
       <Link color="inherit" >
-        StealtH-X
+        App
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -73,14 +73,18 @@ export default function SignInSide(props) {
   function handleClick(e) {
     e.preventDefault();
     setSnackBarVisible(false);
-    var loginData = new FormData();
-    loginData.append('username', userName);
-    loginData.append('password', password);
+    //var loginData = new FormData();
+    var user = {
+      "name": userName,
+      "password": password,
+    }
+    //loginData.append('name', userName);
+    //loginData.append('password', password);
     axios({
-      url : "http://localhost:8000/api-token-auth/",
+      url : "http://localhost:3001/user/signin/",
       method : 'post',
-      data: loginData,
-      headers: {'Content-Type': 'multipart/form-data' }
+      data: user,
+      headers: {'Content-Type': 'application/json' }
     })
       .then((result) => {
         if (result.status === 200 && result.data && result.data.token) {

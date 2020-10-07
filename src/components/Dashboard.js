@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{ useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -27,7 +27,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-
+import axios from 'axios';
 
 
 function Copyright() {
@@ -43,53 +43,41 @@ function Copyright() {
   );
 }
 const columns = [
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
+  { id: 'source', label: 'source', minWidth: 170 },
+  { id: 'destination', label: 'destination', minWidth: 100 },
   {
-    id: 'population',
-    label: 'Population',
+    id: 'travel_date',
+    label: 'Travel date',
     minWidth: 170,
-    align: 'right',
-    format: (value) => value.toLocaleString('en-US'),
+    align: 'right'
   },
   {
-    id: 'size',
-    label: 'Size\u00a0(km\u00b2)',
+    id: 'return_date',
+    label: 'Return Date',
     minWidth: 170,
-    align: 'right',
-    format: (value) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'density',
-    label: 'Density',
-    minWidth: 170,
-    align: 'right',
-    format: (value) => value.toFixed(2),
-  },
+    align: 'right'
+  }
 ];
 
-function createData(name, code, population, size) {
-  const density = population / size;
-  return { name, code, population, size, density };
-}
 
-const rows = [
-  createData('India', 'IN', 1324171354, 3287263),
-  createData('China', 'CN', 1403500365, 9596961),
-  createData('Italy', 'IT', 60483973, 301340),
-  createData('United States', 'US', 327167434, 9833520),
-  createData('Canada', 'CA', 37602103, 9984670),
-  createData('Australia', 'AU', 25475400, 7692024),
-  createData('Germany', 'DE', 83019200, 357578),
-  createData('Ireland', 'IE', 4857000, 70273),
-  createData('Mexico', 'MX', 126577691, 1972550),
-  createData('Japan', 'JP', 126317000, 377973),
-  createData('France', 'FR', 67022000, 640679),
-  createData('United Kingdom', 'GB', 67545757, 242495),
-  createData('Russia', 'RU', 146793744, 17098246),
-  createData('Nigeria', 'NG', 200962417, 923768),
-  createData('Brazil', 'BR', 210147125, 8515767),
-];
+//var rows = []
+// const rows = [
+//   createData('India', 'IN', 1324171354, 3287263),
+//   createData('China', 'CN', 1403500365, 9596961),
+//   createData('Italy', 'IT', 60483973, 301340),
+//   createData('United States', 'US', 327167434, 9833520),
+//   createData('Canada', 'CA', 37602103, 9984670),
+//   createData('Australia', 'AU', 25475400, 7692024),
+//   createData('Germany', 'DE', 83019200, 357578),
+//   createData('Ireland', 'IE', 4857000, 70273),
+//   createData('Mexico', 'MX', 126577691, 1972550),
+//   createData('Japan', 'JP', 126317000, 377973),
+//   createData('France', 'FR', 67022000, 640679),
+//   createData('United Kingdom', 'GB', 67545757, 242495),
+//   createData('Russia', 'RU', 146793744, 17098246),
+//   createData('Nigeria', 'NG', 200962417, 923768),
+//   createData('Brazil', 'BR', 210147125, 8515767),
+// ];
 
 const useTableStyles = makeStyles({
   root: {
@@ -187,6 +175,8 @@ export default function Dashboard() {
   const handleDrawerOpen = () => {
     setOpen(true);
   };
+  //var [rows] = useState(0);
+  let rows= []
   const handleDrawerClose = () => {
     setOpen(false);
   };
@@ -203,6 +193,45 @@ export default function Dashboard() {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+  
+  useEffect(() => {
+    function createData(name, code, population, size) {
+      const density = population / size;
+      return { name, code, population, size, density };
+    }
+    // Update the document title using the browser API
+    let token = localStorage.getItem("token","")
+
+    var config = {
+      method: 'get',
+      url: 'http://localhost:3001/flight/',
+      headers: { 
+        'Content-Type': 'application/json', 
+        'Authorization': 'Bearer '+ token
+      }
+    };
+    
+    axios(config)
+    .then(function (response) {
+      var rows = response.data.data;
+      
+      // for(var i=0;i<tableData.length;i++){
+      //     rows.push(createData(tableData[i]['source'], 
+      //     tableData[i]['destination'], 
+      //     tableData[i]['travel_date'], 
+      //     tableData[i]['return_date']))
+      // }
+      
+      console.log(rows)
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+    
+  }, [rows]);
+
+  
+  
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -267,6 +296,7 @@ export default function Dashboard() {
             </TableRow>
           </TableHead>
           <TableBody>
+            
             {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
               return (
                 <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>

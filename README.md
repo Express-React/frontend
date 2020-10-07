@@ -1,3 +1,10 @@
+
+## Before running this make sure the server is already running on port 3001
+
+Demo Output 
+
+[![Demo CountPages alpha](output.gif)]()
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
